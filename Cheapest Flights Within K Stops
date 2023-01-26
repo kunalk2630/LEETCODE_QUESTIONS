@@ -1,0 +1,51 @@
+class Solution {
+public:
+    
+    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {
+        
+        /* SAME APPROACH AS DJKISTRA ALGORITHM ONLY DIFFERNCE IS THAT IN THIS  WE ALSO CHECK STOPS IF NUMBER OF STOPS IS GREATER 
+        THAN MAX STOPS THEN WE DONT PUSH IT INTO QUEUE AND ALSO WE USE QUEUE NOT PRIORITY QUEUE AS AFTER EVERY ITERTTION STOP IS JUST 
+        INCREASING BY 1 SO SORTING DOESNT MATTER AND PRIORITY QUEUE TAKES EXTRA LOG SPACE
+        */
+        
+        vector<vector<pair<int,int>>> adj(n);
+        for(auto it:flights){
+           
+           //AS GRAPH IS DIRECTED WE JUST INSERT ONCE
+            adj[it[0]].push_back({it[1],it[2]});
+        }
+
+        vector<int> dis(n,1e9);
+        dis[src]=0;
+        queue<pair< int,pair<int,int> >> q;
+        q.push({0,{0,src}});
+        
+        while(!q.empty()){
+
+            int stops=q.front().first;
+            int nodedist=q.front().second.first;
+            int node=q.front().second.second;
+            q.pop();
+
+            for(auto it:adj[node]){
+
+                int adjnode=it.first;
+                int adjdist=it.second;
+                if(nodedist+adjdist<dis[adjnode] && stops<=k){
+
+                    dis[adjnode]=nodedist+adjdist;
+                    q.push({stops+1,{dis[adjnode],adjnode}});
+                }
+            }
+
+        }
+        
+
+        if(dis[dst]!=1e9){
+
+            return dis[dst];
+        }
+        return -1;
+
+    }
+};
